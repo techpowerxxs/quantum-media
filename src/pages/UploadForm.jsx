@@ -10,10 +10,31 @@ export default function UploadForm() {
   // Optional: restrict to internal users only
   if (!user.email.endsWith("@quantumrecordings.ca")) return null;
 
-  const handleUpload = () => {
-    alert("Upload not connected yet — ready for Cloudinary or Supabase.");
+  const handleUpload = async () => {
+    if (!file) return;
+  
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      const res = await fetch("/.netlify/functions/upload-music", {
+        method: "POST",
+        body: formData,
+      });
+  
+      const result = await res.json();
+  
+      if (res.ok) {
+        alert(`Upload successful: ${result.path}`);
+      } else {
+        alert(`Upload failed: ${result.error}`);
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("Unexpected error uploading file.");
+    }
   };
-
+  
   return (
     <div className="mt-6">
       <h2 className="text-lg font-semibold mb-2">Upload a File</h2>
