@@ -4,13 +4,43 @@ title: Quantum Media
 
 # 🎧 Welcome to Quantum Media
 
-Explore internal tools below:
-
-<div class="space-y-4 mt-6">
-  <a href="/login" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-    🔐 Staff Login
-  </a>
-  <a href="/downloads" class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-    📥 Download Center
-  </a>
+<div class="tabs border-b border-gray-300 mb-6">
+  <button onclick="showTab('home')" class="tab px-4 py-2 text-gray-600 hover:text-gray-800 border-b-2 border-transparent hover:border-blue-500 focus:outline-none focus:border-blue-500">
+    Home
+  </button>
+  <button onclick="showTab('features')" class="tab px-4 py-2 text-gray-600 hover:text-gray-800 border-b-2 border-transparent hover:border-blue-500 focus:outline-none focus:border-blue-500">
+    Features
+  </button>
+  <button onclick="showTab('contact')" class="tab px-4 py-2 text-gray-600 hover:text-gray-800 border-b-2 border-transparent hover:border-blue-500 focus:outline-none focus:border-blue-500">
+    Contact
+  </button>
 </div>
+
+<div id="home" class="tab-content">
+  Explore internal tools below:
+  <div class="space-y-4 mt-6">
+    <a href="/login" class="inline-block bg-[#1877F2] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#145DBF]">
+      🔐 Staff Login
+    </a>
+    <a href="/downloads" class="inline-block bg-[#42B72A] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#36A420]">
+      📥 Download Center
+    </a>
+  </div>
+</div>
+
+<div id="features" class="tab-content hidden">
+  <p class="mt-6">Here are some amazing features of Quantum Media!</p>
+</div>
+
+<div id="contact" class="tab-content hidden">
+  <p class="mt-6">Contact us at support@quantummedia.com.</p>
+</div>
+
+<script>
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach((content) => {
+      content.classList.add('hidden');
+    });
+    document.getElementById(tabId).classList.remove('hidden');
+  }
+</script>
