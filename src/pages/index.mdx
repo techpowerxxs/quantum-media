@@ -5,13 +5,13 @@ title: Quantum Media
 # 🎧 Welcome to Quantum Media
 
 <div class="tabs border-b border-gray-300 mb-6">
-  <button onclick="showTab('home')" class="tab px-4 py-2 text-gray-600 hover:text-gray-800 border-b-2 border-transparent hover:border-blue-500 focus:outline-none focus:border-blue-500">
+  <button onclick="showTab('home')" id="tab-home" class="tab px-4 py-2 text-gray-600 hover:text-gray-800 border-b-2 border-blue-500 focus:outline-none">
     Home
   </button>
-  <button onclick="showTab('features')" class="tab px-4 py-2 text-gray-600 hover:text-gray-800 border-b-2 border-transparent hover:border-blue-500 focus:outline-none focus:border-blue-500">
+  <button onclick="showTab('features')" id="tab-features" class="tab px-4 py-2 text-gray-600 hover:text-gray-800 border-b-2 border-transparent hover:border-blue-500 focus:outline-none">
     Features
   </button>
-  <button onclick="showTab('contact')" class="tab px-4 py-2 text-gray-600 hover:text-gray-800 border-b-2 border-transparent hover:border-blue-500 focus:outline-none focus:border-blue-500">
+  <button onclick="showTab('contact')" id="tab-contact" class="tab px-4 py-2 text-gray-600 hover:text-gray-800 border-b-2 border-transparent hover:border-blue-500 focus:outline-none">
     Contact
   </button>
 </div>
@@ -38,9 +38,26 @@ title: Quantum Media
 
 <script>
   function showTab(tabId) {
+    // Hide all tab contents
     document.querySelectorAll('.tab-content').forEach((content) => {
       content.classList.add('hidden');
     });
+
+    // Remove active state from all tabs
+    document.querySelectorAll('.tab').forEach((tab) => {
+      tab.classList.remove('border-blue-500', 'text-gray-800');
+      tab.classList.add('text-gray-600');
+    });
+
+    // Show the selected tab content
     document.getElementById(tabId).classList.remove('hidden');
+
+    // Add active state to the selected tab
+    document.getElementById(`tab-${tabId}`).classList.add('border-blue-500', 'text-gray-800');
   }
+
+  // Set default active tab
+  document.addEventListener('DOMContentLoaded', () => {
+    showTab('home');
+  });
 </script>
