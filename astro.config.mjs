@@ -8,8 +8,9 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
+    site: "https://media.quantumrecordings.ca",
     integrations: [starlight({
-        title: 'My Docs',
+        title: 'Media',
         social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
         sidebar: [
             {
