@@ -1,8 +1,9 @@
 ---
 title: Quantum Media
+import TabScript from "../components/TabScript.jsx";
 ---
-
 # 🎧 Welcome to Quantum Media
+<TabScript />
 
 <div class="tabs border-b border-gray-300 mb-6">
   <button onclick="showTab('home')" id="tab-home" class="tab px-4 py-2 text-gray-600 hover:text-gray-800 border-b-2 border-blue-500 focus:outline-none">
@@ -36,28 +37,3 @@ title: Quantum Media
   <p class="mt-6">Contact us at support@quantummedia.com.</p>
 </div>
 
-<script>
-  function showTab(tabId) {
-    // Hide all tab contents
-    document.querySelectorAll('.tab-content').forEach((content) => {
-      content.classList.add('hidden');
-    });
-
-    // Remove active state from all tabs
-    document.querySelectorAll('.tab').forEach((tab) => {
-      tab.classList.remove('border-blue-500', 'text-gray-800');
-      tab.classList.add('text-gray-600');
-    });
-
-    // Show the selected tab content
-    document.getElementById(tabId).classList.remove('hidden');
-
-    // Add active state to the selected tab
-    document.getElementById(`tab-${tabId}`).classList.add('border-blue-500', 'text-gray-800');
-  }
-
-  // Set default active tab
-  document.addEventListener('DOMContentLoaded', () => {
-    showTab('home');
-  });
-</script>
