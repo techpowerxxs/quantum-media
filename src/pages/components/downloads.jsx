@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import LogoutButton from "../components/LogoutButton";
-import UploadForm from "../components/UploadForm";
+import LogoutButton from "./LogoutButton";
+import UploadForm from "./UploadForm";
 
 export default function DownloadsPage() {
   const { isAuthenticated, isLoading } = useAuth0();
