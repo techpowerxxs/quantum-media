@@ -1,4 +1,4 @@
-import { AuthProvider } from "../components/AuthProvider";
+import { AuthProvider } from "./components/AuthProvider";
 
 function AppWrapper({ children }) {
   return <AuthProvider>{children}</AuthProvider>;
