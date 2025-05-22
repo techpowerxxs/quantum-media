@@ -1,4 +1,4 @@
-import './dashboard.css';
+import '../github-style.css';
 
 export default function MyApp({ Component, pageProps }) {
   return <Component {...pageProps} />;

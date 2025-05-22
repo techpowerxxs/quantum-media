@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 const AuthProviderWithNavigate = ({ children }) => {
   const navigate = useNavigate();
-
   const domain = "dev-ahvdr6kyjhasmbry.us.auth0.com";
   const clientId = "bjVlVhyFUNCipNWP0RoVh9SZ81wHrSyw";
   const redirectUri = window.location.origin;

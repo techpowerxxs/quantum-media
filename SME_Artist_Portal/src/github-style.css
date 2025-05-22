@@ -1,0 +1,105 @@
+.gh-root {
+  min-height: 100vh;
+  background: #181a1b;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #c9d1d9;
+}
+.gh-navbar {
+  background: #24292f;
+  color: #fff;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  justify-content: space-between;
+}
+.gh-logo {
+  font-weight: bold;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+}
+.gh-navbar-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.gh-avatar-small {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+.gh-main {
+  display: flex;
+  min-height: calc(100vh - 56px);
+}
+.gh-sidebar {
+  width: 260px;
+  background: #22272e;
+  border-right: 1px solid #30363d;
+  padding: 32px 16px 0 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.gh-profile {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.gh-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid #30363d;
+  margin-bottom: 12px;
+}
+.gh-profile-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #c9d1d9;
+}
+.gh-profile-email {
+  font-size: 0.95rem;
+  color: #8b949e;
+}
+.gh-sidebar-nav {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.gh-sidebar-link {
+  color: #c9d1d9;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.gh-sidebar-link:hover,
+.gh-sidebar-link-active {
+  background: #30363d;
+}
+.gh-content {
+  flex: 1;
+  padding: 40px 48px;
+}
+.gh-section {
+  background: #22272e;
+  border-radius: 8px;
+  padding: 32px;
+  box-shadow: 0 1px 3px rgba(27,31,35,0.10);
+  color: #c9d1d9;
+}
+.gh-section-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #c9d1d9;
+}
+.gh-profile-details {
+  margin-top: 24px;
+  font-size: 1rem;
+  color: #c9d1d9;
+}
