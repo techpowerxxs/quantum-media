@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { auth0Client } from "../lib/auth0";
+import Layout from "../components/Layout";
 // import "./dashboard.css";
 
 const dummyArtists = [
@@ -30,6 +31,7 @@ export default function Dashboard() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [files, setFiles] = useState([]); // For the new multi-upload section
 
   useEffect(() => {
     auth0Client.getUser().then(setUser);
@@ -56,7 +58,7 @@ export default function Dashboard() {
     formData.append("uploader", user.email);
 
     try {
-      const response = await fetch("https://vps.yourlabel.com/upload", {
+      const response = await fetch("https://vps.quantumrecordings.ca/upload", {
         method: "POST",
         body: formData,
       });
@@ -75,6 +77,19 @@ export default function Dashboard() {
     }
   };
 
+  // New multi-file upload logic
+  const handleMultiUpload = async (e) => {
+    const uploadedFiles = Array.from(e.target.files);
+    setFiles(uploadedFiles);
+
+    // Example: upload each file (implement your backend logic here)
+    // for (const file of uploadedFiles) {
+    //   const formData = new FormData();
+    //   formData.append("file", file);
+    //   await fetch("/api/upload", { method: "POST", body: formData });
+    // }
+  };
+
   if (!user) {
     return (
       <div className="dashboard-container" style={{ textAlign: "center" }}>
@@ -88,110 +103,124 @@ export default function Dashboard() {
     );
   }
 
-  const isAdmin = user.email.endsWith("@yourlabel.com");
+  const isAdmin = user.email.endsWith("@quantumrecordings.ca");
 
   return (
-    <div className="dashboard-container">
-      <h1 className="dashboard-title">Welcome, {user.name}!</h1>
-      <div className="card-grid">
-        <div className="card">
-          <div className="card-title">🎵 Downloads</div>
-          <div className="card-desc">Access label files securely.</div>
-          <a
-            href="https://files.backend.yourlabel.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="button"
-            aria-label="Open File Portal"
-          >
-            Open File Portal
-          </a>
-        </div>
-        <div className="card">
-          <div className="card-title">📢 Announcements</div>
-          <div className="card-desc">Read the latest label updates.</div>
-          <a href="/announcements" className="button" aria-label="Go to Announcements">
-            Go to Announcements
-          </a>
-        </div>
-        <div className="card">
-          <div className="card-title">📄 Artist Profile</div>
-          <div className="card-desc">View or update your profile.</div>
-          <a href="/profile" className="button" aria-label="Edit Profile">
-            Edit Profile
-          </a>
-        </div>
-      </div>
+    <Layout>
+      <div className="dashboard-container">
+        <h1 className="dashboard-title">Welcome, {user.name}!</h1>
 
-      <div className="section">
-        <div className="section-title">⬆️ Upload Your Files</div>
-        <div className="upload-box">
-          <input
-            type="file"
-            onChange={handleFileChange}
-            className="mb-4"
-            aria-label="Select file to upload"
-          />
-          <button
-            className="button"
-            onClick={handleFileUpload}
-            disabled={!selectedFile || !user}
-            aria-label="Upload File"
-          >
-            Upload File
-          </button>
-          {uploadStatus && <p style={{ marginTop: 8, fontSize: "0.95em" }}>{uploadStatus}</p>}
-          <p style={{ fontSize: "0.85em", color: "#888", marginTop: 8 }}>
-            Only admins and you can access your uploaded files.
-          </p>
-        </div>
-      </div>
-
-      <div className="section">
-        <div className="section-title">📁 Your Uploaded Files</div>
-        <ul className="file-list">
-          {uploadedFiles.map((file) => (
-            <li key={file.id || file.url}>
-              <a
-                href={file.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Download ${file.name}`}
-              >
-                {file.name}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {isAdmin && (
+        {/* New Multi-File Upload Section */}
         <div className="section">
-          <div className="section-title">🛠 Admin Panel</div>
-          <div className="admin-panel">
-            <p>View and manage all artist uploads.</p>
-            <a href="/admin/files" className="button" aria-label="Open File Manager">
-              Open File Manager
+          <h2 className="section-title">Artist Dashboard (Multi-File Upload Example)</h2>
+          <input type="file" multiple onChange={handleMultiUpload} />
+          <ul className="file-list" style={{ marginTop: 16 }}>
+            {files.map((file, index) => (
+              <li key={index}>{file.name}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="card-grid">
+          <div className="card">
+            <div className="card-title">🎵 Downloads</div>
+            <div className="card-desc">Access Quantum Records files securely.</div>
+            <a
+              href="https://files.backend.quantumrecordings.ca"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button"
+              aria-label="Open File Portal"
+            >
+              Open File Portal
+            </a>
+          </div>
+          <div className="card">
+            <div className="card-title">📢 Announcements</div>
+            <div className="card-desc">Read the latest Quantum Records updates.</div>
+            <a href="/announcements" className="button" aria-label="Go to Announcements">
+              Go to Announcements
+            </a>
+          </div>
+          <div className="card">
+            <div className="card-title">📄 Artist Profile</div>
+            <div className="card-desc">View or update your profile.</div>
+            <a href="/profile" className="button" aria-label="Edit Profile">
+              Edit Profile
             </a>
           </div>
         </div>
-      )}
 
-      <div className="section">
-        <div className="section-title">🎤 Artist Dashboards</div>
-        <div className="artist-card-grid">
-          {dummyArtists.map((artist) => (
-            <div className="card artist-card" key={artist.profileLink}>
-              <div className="card-title">{artist.name}</div>
-              <div className="card-desc">Role: {artist.role}</div>
-              <div className="card-desc">Last Upload: {artist.lastUpload}</div>
-              <a href={artist.profileLink} className="button" aria-label={`View ${artist.name} Dashboard`}>
-                View Dashboard
+        <div className="section">
+          <div className="section-title">⬆️ Upload Your Files</div>
+          <div className="upload-box">
+            <input
+              type="file"
+              onChange={handleFileChange}
+              className="mb-4"
+              aria-label="Select file to upload"
+            />
+            <button
+              className="button"
+              onClick={handleFileUpload}
+              disabled={!selectedFile || !user}
+              aria-label="Upload File"
+            >
+              Upload File
+            </button>
+            {uploadStatus && <p style={{ marginTop: 8, fontSize: "0.95em" }}>{uploadStatus}</p>}
+            <p style={{ fontSize: "0.85em", color: "#888", marginTop: 8 }}>
+              Only Quantum Records admins and you can access your uploaded files.
+            </p>
+          </div>
+        </div>
+
+        <div className="section">
+          <div className="section-title">📁 Your Uploaded Files</div>
+          <ul className="file-list">
+            {uploadedFiles.map((file) => (
+              <li key={file.id || file.url}>
+                <a
+                  href={file.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Download ${file.name}`}
+                >
+                  {file.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {isAdmin && (
+          <div className="section">
+            <div className="section-title">🛠 Quantum Records Admin Panel</div>
+            <div className="admin-panel">
+              <p>View and manage all artist uploads.</p>
+              <a href="/admin/files" className="button" aria-label="Open File Manager">
+                Open File Manager
               </a>
             </div>
-          ))}
+          </div>
+        )}
+
+        <div className="section">
+          <div className="section-title">🎤 Artist Dashboards</div>
+          <div className="artist-card-grid">
+            {dummyArtists.map((artist) => (
+              <div className="card artist-card" key={artist.profileLink}>
+                <div className="card-title">{artist.name}</div>
+                <div className="card-desc">Role: {artist.role}</div>
+                <div className="card-desc">Last Upload: {artist.lastUpload}</div>
+                <a href={artist.profileLink} className="button" aria-label={`View ${artist.name} Dashboard`}>
+                  View Dashboard
+                </a>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
