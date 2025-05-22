@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "../components/ui/button";
+import { LoginButton, LogoutButton } from "../components/AuthButtons";
 import { Card, CardContent } from "../components/ui/card";
 import { auth0Client } from "../lib/auth0";
 import Layout from "../components/Layout";
@@ -32,9 +33,11 @@ export default function Dashboard() {
   const [uploadStatus, setUploadStatus] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [files, setFiles] = useState([]); // For the new multi-upload section
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     auth0Client.getUser().then(setUser);
+    auth0Client.isAuthenticated().then(setIsAuthenticated);
   }, []);
 
   useEffect(() => {
@@ -96,9 +99,7 @@ export default function Dashboard() {
         <h1 className="dashboard-title" style={{ marginBottom: 16 }}>
           Please log in to access the portal.
         </h1>
-        <button className="button" onClick={() => auth0Client.loginWithRedirect()}>
-          Login
-        </button>
+        <LoginButton />
       </div>
     );
   }
@@ -108,6 +109,14 @@ export default function Dashboard() {
   return (
     <Layout>
       <div className="dashboard-container">
+        {/* Navbar with Login/Logout */}
+        <nav className="gh-navbar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+          <span className="gh-logo" style={{ fontWeight: "bold", fontSize: "1.3rem" }}>Quantum Records</span>
+          <div>
+            {isAuthenticated ? <LogoutButton /> : <LoginButton />}
+          </div>
+        </nav>
+
         <h1 className="dashboard-title">Welcome, {user.name}!</h1>
 
         {/* New Multi-File Upload Section */}
@@ -160,14 +169,13 @@ export default function Dashboard() {
               className="mb-4"
               aria-label="Select file to upload"
             />
-            <button
-              className="button"
+            <Button
               onClick={handleFileUpload}
               disabled={!selectedFile || !user}
               aria-label="Upload File"
             >
               Upload File
-            </button>
+            </Button>
             {uploadStatus && <p style={{ marginTop: 8, fontSize: "0.95em" }}>{uploadStatus}</p>}
             <p style={{ fontSize: "0.85em", color: "#888", marginTop: 8 }}>
               Only Quantum Records admins and you can access your uploaded files.
