@@ -1,0 +1,102 @@
+body {
+  background: #fff;
+  color: #111;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.dashboard-container {
+  padding: 32px;
+  display: grid;
+  gap: 24px;
+}
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  padding: 20px;
+}
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.card-desc {
+  color: #555;
+  margin-bottom: 12px;
+}
+.button {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  margin-top: 8px;
+}
+.button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+.section {
+  margin-top: 40px;
+}
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.upload-box {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fafafa;
+}
+.file-list {
+  list-style: disc inside;
+  padding-left: 0;
+}
+.file-list a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+.admin-panel {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fafafa;
+}
+.artist-card-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  .artist-card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.artist-card .card-title {
+  margin-bottom: 4px;
+}
+.artist-card .card-desc {
+  margin-bottom: 4px;
+}
