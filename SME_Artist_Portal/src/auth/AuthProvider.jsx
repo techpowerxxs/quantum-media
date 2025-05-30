@@ -1,11 +1,11 @@
 import { Auth0Provider } from '@auth0/auth0-react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 const AuthProviderWithNavigate = ({ children }) => {
-  const navigate = useNavigate();
-  const domain = "dev-ahvdr6kyjhasmbry.us.auth0.com";
-  const clientId = "bjVlVhyFUNCipNWP0RoVh9SZ81wHrSyw";
-  const redirectUri = window.location.origin;
+  const router = useRouter();
+  const domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
+  const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
+  const redirectUri = typeof window !== "undefined" ? window.location.origin : "";
 
   return (
     <Auth0Provider
@@ -13,7 +13,7 @@ const AuthProviderWithNavigate = ({ children }) => {
       clientId={clientId}
       authorizationParams={{ redirect_uri: redirectUri }}
       onRedirectCallback={(appState) => {
-        navigate(appState?.returnTo || window.location.pathname);
+        router.push(appState?.returnTo || window.location.pathname);
       }}
     >
       {children}

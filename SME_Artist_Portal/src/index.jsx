@@ -1,234 +1,219 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "../components/ui/button";
 import { LoginButton, LogoutButton } from "../components/AuthButtons";
-import { Card, CardContent } from "../components/ui/card";
-import { auth0Client } from "../lib/auth0";
-import Layout from "../components/Layout";
-// import "./dashboard.css";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const dummyArtists = [
-  {
-    name: "DJ Echo",
-    role: "Producer",
-    lastUpload: "2025-05-10",
-    profileLink: "/profile/echo",
-  },
-  {
-    name: "MC Nova",
-    role: "Vocalist",
-    lastUpload: "2025-05-15",
-    profileLink: "/profile/nova",
-  },
-  {
-    name: "Synth Shadow",
-    role: "Composer",
-    lastUpload: "2025-04-30",
-    profileLink: "/profile/shadow",
-  },
+  { name: "DJ Echo", role: "Producer", lastUpload: "2025-05-10", profileLink: "/dummy" },
+  { name: "MC Nova", role: "Vocalist", lastUpload: "2025-05-15", profileLink: "/dummy" },
+  { name: "Synth Shadow", role: "Composer", lastUpload: "2025-04-30", profileLink: "/dummy" },
 ];
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null);
+  const { user, isAuthenticated, isLoading } = useAuth0();
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [files, setFiles] = useState([]); // For the new multi-upload section
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [files, setFiles] = useState([]);
 
-  useEffect(() => {
-    auth0Client.getUser().then(setUser);
-    auth0Client.isAuthenticated().then(setIsAuthenticated);
-  }, []);
+  const displayName = user?.nickname || user?.given_name || user?.name || user?.email || "";
+  const isAdmin = user && user.email.endsWith("@quantumrecordings.ca");
 
   useEffect(() => {
     if (user) {
-      fetch(`/api/files?user=${user.email}`)
-        .then((res) => res.json())
-        .then(setUploadedFiles)
-        .catch(() => setUploadStatus("❌ Error fetching files"));
+      setUploadStatus("Fetching files (mock)...");
+      setTimeout(() => {
+        setUploadedFiles([
+          { id: 1, name: "mockfile1.wav", url: "/dummy" },
+          { id: 2, name: "mockfile2.mp3", url: "/dummy" },
+        ]);
+        setUploadStatus("");
+      }, 700);
     }
   }, [user]);
 
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
-
+  const handleFileChange = (e) => setSelectedFile(e.target.files[0]);
   const handleFileUpload = async () => {
     if (!selectedFile || !user) return;
-
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    formData.append("uploader", user.email);
-
-    try {
-      const response = await fetch("https://vps.quantumrecordings.ca/upload", {
-        method: "POST",
-        body: formData,
-      });
-      if (response.ok) {
-        setUploadStatus("✅ Upload successful");
-        setSelectedFile(null);
-        fetch(`/api/files?user=${user.email}`)
-          .then((res) => res.json())
-          .then(setUploadedFiles)
-          .catch(() => setUploadStatus("❌ Error fetching files"));
-      } else {
-        setUploadStatus("❌ Upload failed");
-      }
-    } catch (err) {
-      setUploadStatus("❌ Error uploading file");
-    }
+    setUploadStatus("Uploading (mock)...");
+    setTimeout(() => {
+      setUploadStatus("✅ Upload successful (mock)");
+      setUploadedFiles((prev) => [
+        ...prev,
+        { id: Date.now(), name: selectedFile.name, url: "/dummy" },
+      ]);
+      setSelectedFile(null);
+    }, 1000);
   };
 
-  // New multi-file upload logic
-  const handleMultiUpload = async (e) => {
-    const uploadedFiles = Array.from(e.target.files);
-    setFiles(uploadedFiles);
-
-    // Example: upload each file (implement your backend logic here)
-    // for (const file of uploadedFiles) {
-    //   const formData = new FormData();
-    //   formData.append("file", file);
-    //   await fetch("/api/upload", { method: "POST", body: formData });
-    // }
-  };
-
-  if (!user) {
+  if (isLoading) {
     return (
-      <div className="dashboard-container" style={{ textAlign: "center" }}>
-        <h1 className="dashboard-title" style={{ marginBottom: 16 }}>
-          Please log in to access the portal.
-        </h1>
-        <LoginButton />
+      <div className="wire-root">
+        <div className="wire-navbar">
+          <div className="wire-logo">
+            <span className="wire-logo-circle"></span>
+            Quantum Records
+          </div>
+        </div>
+        <div className="wire-main-content">
+          <div className="wire-card">
+            <h2>Loading...</h2>
+          </div>
+        </div>
       </div>
     );
   }
 
-  const isAdmin = user.email.endsWith("@quantumrecordings.ca");
+  if (!user) {
+    return (
+      <div className="wire-root">
+        <div className="wire-navbar">
+          <div className="wire-logo">
+            <span className="wire-logo-circle"></span>
+            Quantum Records
+          </div>
+          <div className="wire-nav-group">
+            <div className="wire-nav-pill">
+              <a href="/dummy" className="wire-nav-link">Features</a>
+              <a href="/dummy" className="wire-nav-link">Pricing</a>
+              <a href="/dummy" className="wire-nav-link">FAQ</a>
+              <a href="/dummy" className="wire-nav-link">
+                <span role="img" aria-label="user">👤</span> Log In
+              </a>
+            </div>
+            <button className="wire-nav-btn">GET STARTED</button>
+          </div>
+        </div>
+        <div className="wire-main-content">
+          <div className="wire-card">
+            <h1>Welcome!</h1>
+            <LoginButton />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <Layout>
-      <div className="dashboard-container">
-        {/* Navbar with Login/Logout */}
-        <nav className="gh-navbar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-          <span className="gh-logo" style={{ fontWeight: "bold", fontSize: "1.3rem" }}>Quantum Records</span>
-          <div>
+    <div className="wire-root">
+      <div className="wire-navbar">
+        <div className="wire-logo">
+          <span className="wire-logo-circle"></span>
+          Quantum Records
+        </div>
+        <div className="wire-nav-group">
+          <div className="wire-nav-pill">
+            <a href="/dummy" className="wire-nav-link">Files</a>
+            <a href="/dummy" className="wire-nav-link">Upload</a>
+            <a href="/profile" className="wire-nav-link">Profile</a>
+            <a href="/announcements" className="wire-nav-link">Announcements</a>
+            {isAdmin && (
+              <a href="/admin/files" className="wire-nav-link">Admin</a>
+            )}
             {isAuthenticated ? <LogoutButton /> : <LoginButton />}
           </div>
-        </nav>
-
-        <h1 className="dashboard-title">Welcome, {user.name}!</h1>
-
-        {/* New Multi-File Upload Section */}
-        <div className="section">
-          <h2 className="section-title">Artist Dashboard (Multi-File Upload Example)</h2>
-          <input type="file" multiple onChange={handleMultiUpload} />
-          <ul className="file-list" style={{ marginTop: 16 }}>
-            {files.map((file, index) => (
-              <li key={index}>{file.name}</li>
-            ))}
-          </ul>
+          <button
+            className="wire-nav-btn"
+            onClick={() => document.getElementById("upload-section")?.scrollIntoView({ behavior: "smooth" })}
+          >
+            GET STARTED
+          </button>
         </div>
-
-        <div className="card-grid">
-          <div className="card">
-            <div className="card-title">🎵 Downloads</div>
-            <div className="card-desc">Access Quantum Records files securely.</div>
-            <a
-              href="https://files.backend.quantumrecordings.ca"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="button"
-              aria-label="Open File Portal"
-            >
-              Open File Portal
-            </a>
-          </div>
-          <div className="card">
-            <div className="card-title">📢 Announcements</div>
-            <div className="card-desc">Read the latest Quantum Records updates.</div>
-            <a href="/announcements" className="button" aria-label="Go to Announcements">
-              Go to Announcements
-            </a>
-          </div>
-          <div className="card">
-            <div className="card-title">📄 Artist Profile</div>
-            <div className="card-desc">View or update your profile.</div>
-            <a href="/profile" className="button" aria-label="Edit Profile">
-              Edit Profile
-            </a>
-          </div>
-        </div>
-
-        <div className="section">
-          <div className="section-title">⬆️ Upload Your Files</div>
-          <div className="upload-box">
+      </div>
+      <img src={user.picture} alt={displayName} className="wire-profile-img" />
+      <div className="wire-artist-name">{displayName}</div>
+      <div className="wire-tagline">Your Artist Portal</div>
+      <div className="wire-main-content">
+        <div className="wire-card" id="upload-section">
+          <h2>Upload Your Files</h2>
+          <label className="wire-file-upload-label">
+            Choose File
             <input
               type="file"
               onChange={handleFileChange}
-              className="mb-4"
               aria-label="Select file to upload"
+              className="wire-file-input"
             />
-            <Button
-              onClick={handleFileUpload}
-              disabled={!selectedFile || !user}
-              aria-label="Upload File"
-            >
-              Upload File
-            </Button>
-            {uploadStatus && <p style={{ marginTop: 8, fontSize: "0.95em" }}>{uploadStatus}</p>}
-            <p style={{ fontSize: "0.85em", color: "#888", marginTop: 8 }}>
-              Only Quantum Records admins and you can access your uploaded files.
-            </p>
-          </div>
+          </label>
+          {selectedFile && (
+            <span style={{ marginLeft: 12, fontSize: "1rem" }}>{selectedFile.name}</span>
+          )}
+          <button
+            onClick={handleFileUpload}
+            disabled={!selectedFile || !user}
+            aria-label="Upload File"
+            className="wire-btn"
+          >
+            Upload File
+          </button>
+          {uploadStatus && (
+            <p style={{ marginTop: 8, fontSize: "0.95em" }}>{uploadStatus}</p>
+          )}
         </div>
-
-        <div className="section">
-          <div className="section-title">📁 Your Uploaded Files</div>
-          <ul className="file-list">
+        <div className="wire-card">
+          <h2>Your Uploaded Files</h2>
+          <ul className="wire-file-list">
             {uploadedFiles.map((file) => (
-              <li key={file.id || file.url}>
+              <li key={file.id || file.url} className="wire-file-card">
+                <div className="wire-file-icon">🎵</div>
+                <div className="wire-file-name">{file.name}</div>
                 <a
                   href={file.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="wire-btn"
                   aria-label={`Download ${file.name}`}
                 >
-                  {file.name}
+                  Download
                 </a>
               </li>
             ))}
           </ul>
         </div>
-
-        {isAdmin && (
-          <div className="section">
-            <div className="section-title">🛠 Quantum Records Admin Panel</div>
-            <div className="admin-panel">
-              <p>View and manage all artist uploads.</p>
-              <a href="/admin/files" className="button" aria-label="Open File Manager">
-                Open File Manager
-              </a>
-            </div>
-          </div>
-        )}
-
-        <div className="section">
-          <div className="section-title">🎤 Artist Dashboards</div>
-          <div className="artist-card-grid">
+        <div className="wire-card">
+          <h2>Quick Links</h2>
+          <a
+            href="https://files.backend.quantumrecordings.ca"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="wire-btn"
+          >
+            File Portal
+          </a>
+          <a href="/announcements" className="wire-btn">
+            Announcements
+          </a>
+          <a href="/profile" className="wire-btn">
+            Edit Profile
+          </a>
+          {isAdmin && (
+            <a href="/admin/files" className="wire-btn">
+              Admin
+            </a>
+          )}
+          <a href="/dummy" className="wire-btn">
+            Dummy Link
+          </a>
+        </div>
+        <div className="wire-card">
+          <h2>Artist Dashboards</h2>
+          <ul className="wire-file-list">
             {dummyArtists.map((artist) => (
-              <div className="card artist-card" key={artist.profileLink}>
-                <div className="card-title">{artist.name}</div>
+              <li className="wire-file-card artist-card" key={artist.profileLink}>
+                <div className="wire-file-name">{artist.name}</div>
                 <div className="card-desc">Role: {artist.role}</div>
                 <div className="card-desc">Last Upload: {artist.lastUpload}</div>
-                <a href={artist.profileLink} className="button" aria-label={`View ${artist.name} Dashboard`}>
+                <a
+                  href={artist.profileLink}
+                  className="wire-btn"
+                  aria-label={`View ${artist.name} Dashboard`}
+                >
                   View Dashboard
                 </a>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }
