@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { LoginButton, LogoutButton } from "../components/AuthButtons";
 import { useAuth0 } from "@auth0/auth0-react";
+import Link from "next/link";
+// Import the helper to get recent files from your files page
+import { getRecentFilesForUser } from "./files";
 
 const dummyArtists = [
   { name: "DJ Echo", role: "Producer", lastUpload: "2025-05-10", profileLink: "/dummy" },
@@ -8,50 +11,48 @@ const dummyArtists = [
   { name: "Synth Shadow", role: "Composer", lastUpload: "2025-04-30", profileLink: "/dummy" },
 ];
 
+// Import the same mock file system as in files.jsx for demo purposes
+const initialMockFileSystem = {
+  "SapphireDVD": {
+    "Content": {
+      "Audio": {
+        "track1.wav": { type: "audio", uploadedAt: "2025-05-30T12:00:00Z" },
+        "track2.wav": { type: "audio", uploadedAt: "2025-05-29T12:00:00Z" }
+      },
+      "Images": {
+        "cover.jpg": { type: "image", uploadedAt: "2025-05-28T12:00:00Z" }
+      }
+    },
+    "Notes.txt": { type: "text", uploadedAt: "2025-05-27T12:00:00Z" }
+  },
+  "DJ_Echo": {
+    "beats": {
+      "beat1.wav": { type: "audio", uploadedAt: "2025-05-29T12:00:00Z" }
+    }
+  }
+};
+
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading } = useAuth0();
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState("");
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [files, setFiles] = useState([]);
+  const [recentFiles, setRecentFiles] = useState([]);
 
   const displayName = user?.nickname || user?.given_name || user?.name || user?.email || "";
   const isAdmin = user && user.email.endsWith("@quantumrecordings.ca");
 
   useEffect(() => {
     if (user) {
-      setUploadStatus("Fetching files (mock)...");
-      setTimeout(() => {
-        setUploadedFiles([
-          { id: 1, name: "mockfile1.wav", url: "/dummy" },
-          { id: 2, name: "mockfile2.mp3", url: "/dummy" },
-        ]);
-        setUploadStatus("");
-      }, 700);
+      // Use the helper to get recent files for the signed-in user
+      const artistRoot = user.nickname || user.given_name || user.name || user.email.split("@")[0];
+      setRecentFiles(getRecentFilesForUser(initialMockFileSystem, artistRoot, 5));
     }
   }, [user]);
-
-  const handleFileChange = (e) => setSelectedFile(e.target.files[0]);
-  const handleFileUpload = async () => {
-    if (!selectedFile || !user) return;
-    setUploadStatus("Uploading (mock)...");
-    setTimeout(() => {
-      setUploadStatus("✅ Upload successful (mock)");
-      setUploadedFiles((prev) => [
-        ...prev,
-        { id: Date.now(), name: selectedFile.name, url: "/dummy" },
-      ]);
-      setSelectedFile(null);
-    }, 1000);
-  };
 
   if (isLoading) {
     return (
       <div className="wire-root">
         <div className="wire-navbar">
           <div className="wire-logo">
-            <span className="wire-logo-circle"></span>
-            Quantum Records
+             Quantum Records
           </div>
         </div>
         <div className="wire-main-content">
@@ -67,22 +68,33 @@ export default function Dashboard() {
     return (
       <div className="wire-root">
         <div className="wire-navbar">
-          <div className="wire-logo">
-            <span className="wire-logo-circle"></span>
-            Quantum Records
-          </div>
-          <div className="wire-nav-group">
-            <div className="wire-nav-pill">
-              <a href="/dummy" className="wire-nav-link">Features</a>
-              <a href="/dummy" className="wire-nav-link">Pricing</a>
-              <a href="/dummy" className="wire-nav-link">FAQ</a>
-              <a href="/dummy" className="wire-nav-link">
-                <span role="img" aria-label="user">👤</span> Log In
-              </a>
-            </div>
-            <button className="wire-nav-btn">GET STARTED</button>
-          </div>
+        <div className="wire-logo">
+          <img
+            src="https://media.quantumrecordings.ca/assets/images/favicon.png"
+            alt="Quantum Records Logo"
+            style={{ width: 38, height: 38, borderRadius: "50%", marginRight: 12, background: "#35323a" }}
+          />
+          Quantum Records
         </div>
+        <div className="wire-nav-group">
+          <div className="wire-nav-pill">
+            <a href="/files" className="wire-nav-link">Files</a>
+            <a href="/files?upload=1" className="wire-nav-link">Upload</a>
+            <a href="/profile" className="wire-nav-link">Profile</a>
+            <a href="/announcements" className="wire-nav-link">Announcements</a>
+            {isAdmin && (
+              <a href="/admin/files" className="wire-nav-link">Admin</a>
+            )}
+            {isAuthenticated ? <LogoutButton /> : <LoginButton />}
+          </div>
+          <button
+            className="wire-nav-btn"
+            onClick={() => window.location.href = "/files"}
+          >
+            GET STARTED
+          </button>
+        </div>
+      </div>
         <div className="wire-main-content">
           <div className="wire-card">
             <h1>Welcome!</h1>
@@ -102,18 +114,18 @@ export default function Dashboard() {
         </div>
         <div className="wire-nav-group">
           <div className="wire-nav-pill">
-            <a href="/dummy" className="wire-nav-link">Files</a>
-            <a href="/dummy" className="wire-nav-link">Upload</a>
-            <a href="/profile" className="wire-nav-link">Profile</a>
-            <a href="/announcements" className="wire-nav-link">Announcements</a>
+            <Link href="/files" className="wire-nav-link">Files</Link>
+            <Link href="/files?upload=1" className="wire-nav-link">Upload</Link>
+            <Link href="/profile" className="wire-nav-link">Profile</Link>
+            <Link href="/announcements" className="wire-nav-link">Announcements</Link>
             {isAdmin && (
-              <a href="/admin/files" className="wire-nav-link">Admin</a>
+              <Link href="/admin/files" className="wire-nav-link">Admin</Link>
             )}
             {isAuthenticated ? <LogoutButton /> : <LoginButton />}
           </div>
           <button
             className="wire-nav-btn"
-            onClick={() => document.getElementById("upload-section")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() => window.location.href = "/files"}
           >
             GET STARTED
           </button>
@@ -123,51 +135,43 @@ export default function Dashboard() {
       <div className="wire-artist-name">{displayName}</div>
       <div className="wire-tagline">Your Artist Portal</div>
       <div className="wire-main-content">
-        <div className="wire-card" id="upload-section">
-          <h2>Upload Your Files</h2>
-          <label className="wire-file-upload-label">
-            Choose File
-            <input
-              type="file"
-              onChange={handleFileChange}
-              aria-label="Select file to upload"
-              className="wire-file-input"
-            />
-          </label>
-          {selectedFile && (
-            <span style={{ marginLeft: 12, fontSize: "1rem" }}>{selectedFile.name}</span>
-          )}
-          <button
-            onClick={handleFileUpload}
-            disabled={!selectedFile || !user}
-            aria-label="Upload File"
-            className="wire-btn"
-          >
-            Upload File
-          </button>
-          {uploadStatus && (
-            <p style={{ marginTop: 8, fontSize: "0.95em" }}>{uploadStatus}</p>
-          )}
-        </div>
+        {/* Recently Uploaded Files */}
         <div className="wire-card">
-          <h2>Your Uploaded Files</h2>
+          <h2>Recently Uploaded Files</h2>
           <ul className="wire-file-list">
-            {uploadedFiles.map((file) => (
-              <li key={file.id || file.url} className="wire-file-card">
-                <div className="wire-file-icon">🎵</div>
+            {recentFiles.length === 0 && (
+              <li className="wire-file-card" style={{ color: "#888" }}>
+                No recent files found.
+              </li>
+            )}
+            {recentFiles.map((file) => (
+              <li key={file.name + file.uploadedAt} className="wire-file-card">
+                <div className="wire-file-icon">
+                  {file.type === "image" ? "🖼️" : file.type === "audio" ? "🎵" : file.type === "text" ? "📄" : "📦"}
+                </div>
                 <div className="wire-file-name">{file.name}</div>
+                <div style={{ fontSize: "0.9em", color: "#888", marginBottom: 8 }}>
+                  Uploaded: {file.uploadedAt ? new Date(file.uploadedAt).toLocaleString() : ""}
+                </div>
                 <a
-                  href={file.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#"
                   className="wire-btn"
                   aria-label={`Download ${file.name}`}
+                  style={{ pointerEvents: "none", opacity: 0.5 }}
                 >
                   Download
                 </a>
               </li>
             ))}
           </ul>
+          <div style={{ marginTop: 16 }}>
+            <Link href="/files" className="wire-btn">
+              Go to File Explorer
+            </Link>
+            <Link href="/files?upload=1" className="wire-btn" style={{ marginLeft: 8 }}>
+              Upload New File
+            </Link>
+          </div>
         </div>
         <div className="wire-card">
           <h2>Quick Links</h2>
